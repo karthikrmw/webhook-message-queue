@@ -1,4 +1,4 @@
-from flask                          import Flask,request,jsonify,Response
+from flask                          import Flask,request,Response
 from redis                          import StrictRedis
 import json
 import os
@@ -48,8 +48,8 @@ def consumer():
         while( len > 0 ):
             resp.append( json.loads(r.lpop(MESSAGEQUEUE)) )
             len = len -1;
-        return jsonify({"result" : resp})
-        Response(json.dumps({"result" : resp}), 200 , mimetype='application/json')
+        return Response(json.dumps({"result" : resp}), 200 , mimetype='application/json')
+
     else:
         return Response(json.dumps({"message" : "This is a webhook consumer only."}), 403 , mimetype='application/json')
 
