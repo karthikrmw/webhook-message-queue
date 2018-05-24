@@ -35,14 +35,13 @@ def producer():
 
 @app.route('/webhook-consumer', methods=['GET','POST'])
 def consumer():
-    if request.method == 'POST':
+    if request.method == 'GET':
         if request.args.get('CONSUMERTOKEN') is None:
             return Response(json.dumps({"message" : "Please provide consumer auth token"}), 401 , mimetype='application/json')
 
         if request.args.get('CONSUMERTOKEN') != CONSUMERTOKEN:
             return Response(json.dumps({"message" : "Invalid consumer auth token"}), 401 , mimetype='application/json')
 
-        payload = request.get_json()
         len = r.llen(MESSAGEQUEUE)
         resp = []
         while( len > 0 ):

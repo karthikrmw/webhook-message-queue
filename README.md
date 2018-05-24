@@ -11,7 +11,7 @@ may listen directly to these services.
 All webhooks must be send to path `/webhook-producer` inorder to queue the webhook.
 A producer token must be passed as query param to authenticate.
 
-In order to get the list of webhooks queued in redis. A POST call must be made to `/webhook-consumer`
+In order to get the list of webhooks queued in redis. A GET call must be made to `/webhook-consumer`
 A consumer token must be passed as query param to authenticate.
 
 Consumer and producer tokens can be set in the docker-compose file
