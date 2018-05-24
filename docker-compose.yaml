@@ -16,6 +16,9 @@ services:
     build: ./listen
     depends_on:
       - redis
+    environment:
+      - "PRODUCERTOKEN=$PRODUCERTOKEN"
+      - "CONSUMERTOKEN=$CONSUMERTOKEN"
   redis:
     image: "redis:alpine"
     ports:
