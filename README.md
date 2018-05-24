@@ -1,17 +1,26 @@
-# Webhook job queue
-The webhook job queue is designed to receive notifications from services and
-store the JSON as a dictionary in a `python-rq` redis queue. It is designed
-to work with a [Webhook Relay](https://github.com/lscsoft/webhook-relay) that
+# Webhook message queue
+The webhook message queue is designed to receive webhooks from services (producer) and
+store the payload JSON as a dictionary in a redis queue. Any consuming service can make a REST call
+to get the list of payloads of the queued webhooks
+
+It is designed to work with a [Webhook Relay](https://github.com/lscsoft/webhook-relay) that
 validates and relays webhooks from known services such as DockerHub, Docker
 registries, GitHub, and GitLab. However, this is not required and the receiver
 may listen directly to these services.
 
-A worker must be spawned separately to read from the queue and perform tasks in
-response to the event. The worker must have a function named `webhook.job`.
+All webhooks must be send to path `/webhook-producer` inorder to queue the webhook.
+A producer token must be passed as query param to authenticate.
+
+In order to get the list of webhooks queued in redis. A POST call must be made to `/webhook-consumer`
+A consumer token must be passed as query param to authenticate.
+
+Consumer and producer tokens can be set in the docker-compose file
+
+Once the webhooks are requested by the consumer, the webhooks are removed from the queue
 
 ## Running
 
-The job queue requires [docker-compose](https://docs.docker.com/compose/install/)
+The message queue requires [docker-compose](https://docs.docker.com/compose/install/)
 and, in its simplest form, can be invoked with `docker-compose up`. By default,
 it will bind to `localhost:8080` but allow clients from all IP addresses. This
 may appear odd, but on MacOS and Windows, traffic to the containers will appear
@@ -27,18 +36,5 @@ ALLOWED_IPS=A.B.C.D LISTEN_IP=0.0.0.0 docker-compose up
 where `A.B.C.D` is an IP address (or CIDR range) from which your webhooks will
 be sent.
 
-A [worker must be spawned](#example-worker) to perform tasks by removing the
-notification data from the redis queue. The redis keystore is configured to
-listen only to clients on the `localhost`.
 
-## Example worker
-To run jobs using the webhooks as input:
-
-1. Create a file named `webhook.py`
-2. Define a function within named `job` that takes a `dict` as its lone argument
-3. Install `python-rq`
-    * _e.g._ `pip install rq`
-4. Run `rq worker` from within that directory
-
-See the [CVMFS-to-Docker converter](https://github.com/lscsoft/cvmfs-docker-worker)
-for a real world example.
+This repo was forked from https://github.com/lscsoft/webhook-queue
